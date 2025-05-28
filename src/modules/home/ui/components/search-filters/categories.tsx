@@ -2,18 +2,21 @@
 
 import { CategoryDropdown } from "./category-dropdown";
 import { CategoriesSidebar } from "./categories-sidebar";
-import { CustomCategory } from "../types";
 import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ListFilterIcon } from "lucide-react";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
+import { useParams } from "next/navigation";
 
 interface Props {
-  data: CustomCategory[];
+  data: CategoriesGetManyOutput;
 }
 
 export const Categories = ({ data }: Props) => {
+  const params = useParams();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const viewAllRef = useRef<HTMLDivElement>(null);
@@ -22,7 +25,9 @@ export const Categories = ({ data }: Props) => {
   const [isAnyHovered, setIsAnyHovered] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const activeCategory = "all";
+  const categoryParam = params.category as string | undefined;
+
+  const activeCategory = categoryParam || "all";
 
   const activeCategoryIndex = data.findIndex(
     (cat) => cat.slug === activeCategory
@@ -66,11 +71,7 @@ export const Categories = ({ data }: Props) => {
   return (
     <div className="relative w-full">
       {/*Categories Sidebar*/}
-      <CategoriesSidebar
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        data={data}
-      />
+      <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
 
       {/* Hidden div to measure all items */}
       <div
@@ -108,6 +109,7 @@ export const Categories = ({ data }: Props) => {
 
         <div ref={viewAllRef} className="shrink-0">
           <Button
+            variant="elevated"
             className={cn(
               "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
               isActiveCategoryHidden &&
